@@ -1,7 +1,7 @@
-use std::Display;
+use std::fmt;
 
 #[derive(Clone, Debug, PartialEq)]
-pub enum Token {
+pub enum TokenType {
     Illegal,
     Eof,
 
@@ -50,14 +50,14 @@ pub enum Token {
 impl fmt::Display for TokenType {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
         match self {
-            TokenType::ASTERISK => write!(f, "*"),
-            TokenType::SLASH => write!(f, "/"),
-            TokenType::PLUS => write!(f, "+"),
-            TokenType::MINUS => write!(f, "-"),
-            TokenType::GT => write!(f, ">"),
-            TokenType::LT => write!(f, "<"),
-            TokenType::EQ => write!(f, "=="),
-            TokenType::NOT_EQ => write!(f, "!="),
+            TokenType::Asterisk => write!(f, "*"),
+            TokenType::Slash => write!(f, "/"),
+            TokenType::Plus => write!(f, "+"),
+            TokenType::Minus => write!(f, "-"),
+            TokenType::Gt => write!(f, ">"),
+            TokenType::Lt => write!(f, "<"),
+            TokenType::Eq => write!(f, "=="),
+            TokenType::NotEq => write!(f, "!="),
             _ => write!(f, "{:?}", self),
         }
     }
