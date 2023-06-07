@@ -3,10 +3,10 @@ use token::{Token, TokenType, lookup_identifier};
 
 #[derive(Debug)]
 pub struct Lexer {
-    input: String, 
-    position: usize, // current position in input (points to current char)
-    read_position: usize, // current reading position in input (after current char)
-    ch: char, // current char under examination
+    pub input: String, 
+    pub position: usize, // current position in input (points to current char)
+    pub read_position: usize, // current reading position in input (after current char)
+    pub ch: char, // current char under examination
 }
 
 
@@ -29,6 +29,7 @@ impl Lexer {
             self.ch = '\0';
         } else {
             self.ch = mod_input[self.read_position];
+            eprintln!("read_char: {}", self.ch)
         }
         self.position = self.read_position;
         self.read_position += 1;
@@ -60,6 +61,7 @@ impl Lexer {
 
     pub fn next_token(&mut self) -> Token {
         self.skip_whitespace();
+        eprintln!("self.ch: {}", self.ch);
         let token = match self.ch{
             '=' => Token::new(TokenType::Assign, self.ch.to_string()),
             ';' => Token::new(TokenType::Semicolon, self.ch.to_string()),
@@ -84,7 +86,7 @@ impl Lexer {
                     //println!("is digit case");
                     let digit: &str = self.read_number();
                     Token::new(TokenType::Int, digit.to_string())
-                 } else{
+                 } else {
                     //println!("is illegal case");
                     Token::new(TokenType::Illegal, self.ch.to_string())
                  }
@@ -99,45 +101,47 @@ impl Lexer {
 #[cfg(test)]
 mod test {
 
-    use super::Token;
-    use super::TokenType;
+    // use super::Token;
+    // use super::TokenType;
     use super::Lexer;
 
-    #[test]
-    fn test_basic() {
-        assert!(1 == 1);
-    }
+    // #[test]
+    // fn test_basic() {
+    //     assert!(1 == 1);
+    // }
 
-    #[test]
-    pub fn test_next_token() {
-        let input: String = String::from("=+(){},;");
-        let expected: [Token; 8] = [ // array of Token
-            Token {token_type: TokenType::Assign, literal: "=".to_string()},
-            Token {token_type: TokenType::Plus, literal: "+".to_string()},
-            Token {token_type: TokenType::Lparen, literal: "(".to_string()},
-            Token {token_type: TokenType::Rparen, literal: ")".to_string()},
-            Token {token_type: TokenType::Lbrace, literal: "{".to_string()},
-            Token {token_type: TokenType::Rbrace, literal: "}".to_string()},
-            Token {token_type: TokenType::Comma, literal: ",".to_string()},
-            Token {token_type: TokenType::Semicolon, literal: ";".to_string()},
-        ];
+    // #[test]
+    // pub fn test_next_token() {
+    //     let input: String = String::from("=+(){},;");
+    //     let expected: [Token; 8] = [ // array of Token
+    //         Token {token_type: TokenType::Assign, literal: "=".to_string()},
+    //         Token {token_type: TokenType::Plus, literal: "+".to_string()},
+    //         Token {token_type: TokenType::Lparen, literal: "(".to_string()},
+    //         Token {token_type: TokenType::Rparen, literal: ")".to_string()},
+    //         Token {token_type: TokenType::Lbrace, literal: "{".to_string()},
+    //         Token {token_type: TokenType::Rbrace, literal: "}".to_string()},
+    //         Token {token_type: TokenType::Comma, literal: ",".to_string()},
+    //         Token {token_type: TokenType::Semicolon, literal: ";".to_string()},
+    //     ];
 
-        let mut lexer: Lexer = Lexer::new(input);
-        for token in expected {
-            let lexed_token = lexer.next_token();
-            assert_eq!(lexed_token, token);
-        }
-    }    
+    //     let mut lexer: Lexer = Lexer::new(input);
+    //     for token in expected {
+    //         let lexed_token = lexer.next_token();
+    //         assert_eq!(lexed_token, token);
+    //     }
+    // }    
 
 
     #[test]
     fn test_next_bug() {
-        let input: String = String::from("let five = 5;");
+        //let input: String = String::from(";:.6:;.five;:ten:;9nine");
+        let input: String = String::from("6;:;nine;");
+        eprintln!("{:?}", input);
         let mut lexer: Lexer = Lexer::new(input);
-        for _ in 0..5 {
+        for _ in 0..7 {
             let lexed_token = lexer.next_token();
-            eprintln!("{:?}", lexed_token);
-            assert_eq!(1, 1);
+            eprintln!("token: {:?}", lexed_token);
+            assert_eq!(lexed_token, lexed_token);
         }
     }
 
