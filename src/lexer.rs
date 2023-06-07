@@ -1,8 +1,6 @@
 mod token;
 use token::{Token, TokenType, lookup_identifier};  
 
- #[allow(dead_code)]
-
 #[derive(Debug)]
 pub struct Lexer {
     pub input: String, 
