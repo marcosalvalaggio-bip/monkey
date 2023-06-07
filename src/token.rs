@@ -6,10 +6,10 @@ pub enum TokenType {
     Eof,
 
     // Identifiers + literals
-    Ident(String),  // add, foobar, x, y, ...
-    Int(String),    // 123456
-    Float(String),  // 123.456
-    String(String), // "hello"
+    Ident,  // add, foobar, x, y, ...
+    Int,    // 123456
+    Float,  // 123.456
+    String, // "hello"
 
     // Operators
     Assign, // '='
@@ -75,5 +75,25 @@ impl Token {
             token_type: token_type,
             literal: literal,
         }
+    }
+}
+
+pub fn lookup_identifier(ident: &str) -> TokenType {
+    match ident {
+        // General Keywords
+        "let" => TokenType::Let,
+        "fn" => TokenType::Function,
+        "return" => TokenType::Return,
+
+        // Conditional Statement Keywords
+        "if" => TokenType::If,
+        "else" => TokenType::Else,
+
+        // Boolean Keywords
+        "true" => TokenType::True,
+        "false" => TokenType::False,
+
+        // Normal identifier
+        _ => TokenType::Ident,
     }
 }
