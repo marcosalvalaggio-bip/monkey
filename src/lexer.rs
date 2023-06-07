@@ -42,8 +42,9 @@ impl Lexer {
         while is_letter(self.ch) {
             self.read_char();
         }
-        //eprintln!("position: {:?}", self.position);
-        //eprintln!("read_position: {:?}", self.read_position);
+        // eprintln!("position: {:?}", self.position);
+        // eprintln!("read_position: {:?}", self.read_position);
+        // eprintln!("ch: {:?}", self.ch);
         self.read_position -=1;
         &self.input[position..self.position]
     } 
@@ -53,8 +54,10 @@ impl Lexer {
         while is_digit(self.ch) {
             self.read_char();
         }
-        //eprintln!("position: {:?}", self.position);
-        //eprintln!("read_position: {:?}", self.read_position);
+        // eprintln!("position: {:?}", self.position);
+        // eprintln!("read_position: {:?}", self.read_position);
+        // eprintln!("ch: {:?}", self.ch);
+        // se non metto il read_position -1 quando esco dal primo match salta il simbilo successivo
         self.read_position -=1;
         &self.input[position..self.position]
     }
@@ -141,69 +144,84 @@ mod test {
 
 
     #[test]
-    fn test_next_bug() {
-        //let input: String = String::from(";:.6:;.five;:ten:;9nine");
-        let input: String = String::from("let x = 6;");
-        eprintln!("{:?}", input);
-        let mut lexer: Lexer = Lexer::new(input);
-        for _ in 0..10 {
+    pub fn test_next_token_ext() {
+        let input = "let five = 5;";
+        let expected = [
+            Token {token_type: TokenType::Let, literal: "let".to_string()},
+            Token {token_type: TokenType::Ident, literal: "five".to_string()},
+            Token {token_type: TokenType::Assign, literal: "=".to_string()},
+            Token {token_type: TokenType::Int, literal: "5".to_string()},
+            Token {token_type: TokenType::Semicolon, literal: ";".to_string()},
+        ];
+        let mut lexer: Lexer = Lexer::new(input.to_string());
+        for token in expected {
             let lexed_token = lexer.next_token();
-            eprintln!("token: {:?}", lexed_token);
-            assert_eq!(1,1);
+            //println!("expected: {:?}, read: {:?}", token, lexed_token);
+            assert_eq!(lexed_token, token);
         }
+            
     }
 
-    // #[test]
-    // pub fn test_next_token_ext() {
-    //     let input = "let five = 5;";
-    //     let expected = [
-    //         Token {token_type: TokenType::Let, literal: "let".to_string()},
-    //         Token {token_type: TokenType::Ident, literal: "five".to_string()},
-    //         Token {token_type: TokenType::Assign, literal: "=".to_string()},
-    //         Token {token_type: TokenType::Int, literal: "5".to_string()},
-    //         Token {token_type: TokenType::Semicolon, literal: ";".to_string()},
-    //         Token {token_type: TokenType::Eof, literal: ";".to_string()},
-    //     //     Token {token_type: TokenType::Let, literal: "let".to_string()},
-    //     //     Token {token_type: TokenType::Ident, literal: "ten".to_string()},
-    //     //     Token {token_type: TokenType::Assign, literal: "=".to_string()},
-    //     //     Token {token_type: TokenType::Int, literal: "10".to_string()},
-    //     //     Token {token_type: TokenType::Semicolon, literal: ";".to_string()},
-    //     //     Token {token_type: TokenType::Let, literal: "let".to_string()},
-    //     //     Token {token_type: TokenType::Ident, literal: "add".to_string()},
-    //     //     Token {token_type: TokenType::Assign, literal: "=".to_string()},
-    //     //     Token {token_type: TokenType::Function, literal: "fn".to_string()},
-    //     //     Token {token_type: TokenType::Lparen, literal: "(".to_string()},
-    //     //     Token {token_type: TokenType::Ident, literal: "x".to_string()},
-    //     //     Token {token_type: TokenType::Comma, literal: ",".to_string()},
-    //     //     Token {token_type: TokenType::Ident, literal: "y".to_string()},
-    //     //     Token {token_type: TokenType::Rparen, literal: ")".to_string()},
-    //     //     Token {token_type: TokenType::Lbrace, literal: "{".to_string()},
-    //     //     Token {token_type: TokenType::Ident, literal: "x".to_string()},
-    //     //     Token {token_type: TokenType::Plus, literal: "+".to_string()},
-    //     //     Token {token_type: TokenType::Ident, literal: "y".to_string()},
-    //     //     Token {token_type: TokenType::Semicolon, literal: ";".to_string()},
-    //     //     Token {token_type: TokenType::Rbrace, literal: "}".to_string()},
-    //     //     Token {token_type: TokenType::Semicolon, literal: ";".to_string()},
-    //     //     Token {token_type: TokenType::Let, literal: "let".to_string()},
-    //     //     Token {token_type: TokenType::Ident, literal: "result".to_string()},
-    //     //     Token {token_type: TokenType::Assign, literal: "=".to_string()},
-    //     //     Token {token_type: TokenType::Ident, literal: "add".to_string()},
-    //     //     Token {token_type: TokenType::Lparen, literal: "(".to_string()},
-    //     //     Token {token_type: TokenType::Ident, literal: "five".to_string()},
-    //     //     Token {token_type: TokenType::Ident, literal: "ten".to_string()},
-    //     //     Token {token_type: TokenType::Rparen, literal: ")".to_string()},
-    //     //     Token {token_type: TokenType::Semicolon, literal: ";".to_string()},
-    //     //  Token {token_type: TokenType::Eof, literal: ";".to_string()},
-    //     ];
+    #[test]
+    pub fn test_next_token_ext_2() {
+        let input = "
+        let five = 5;
+        let ten = 10;
 
-    //     let mut lexer: Lexer = Lexer::new(input.to_string());
-    //     for token in expected {
-    //         let lexed_token = lexer.next_token();
-    //         println!("expected: {:?}, read: {:?}", token, lexed_token);
-    //         assert_eq!(lexed_token, token);
-    //     }
+        let add = fn(x, y){
+            x+y;
+        };
+        
+        let result = add(five, ten);
+        ";
+        let expected = [
+            Token {token_type: TokenType::Let, literal: "let".to_string()},
+            Token {token_type: TokenType::Ident, literal: "five".to_string()},
+            Token {token_type: TokenType::Assign, literal: "=".to_string()},
+            Token {token_type: TokenType::Int, literal: "5".to_string()},
+            Token {token_type: TokenType::Semicolon, literal: ";".to_string()},
+            Token {token_type: TokenType::Let, literal: "let".to_string()},
+            Token {token_type: TokenType::Ident, literal: "ten".to_string()},
+            Token {token_type: TokenType::Assign, literal: "=".to_string()},
+            Token {token_type: TokenType::Int, literal: "10".to_string()},
+            Token {token_type: TokenType::Semicolon, literal: ";".to_string()},
+            Token {token_type: TokenType::Let, literal: "let".to_string()},
+            Token {token_type: TokenType::Ident, literal: "add".to_string()},
+            Token {token_type: TokenType::Assign, literal: "=".to_string()},
+            Token {token_type: TokenType::Function, literal: "fn".to_string()},
+            Token {token_type: TokenType::Lparen, literal: "(".to_string()},
+            Token {token_type: TokenType::Ident, literal: "x".to_string()},
+            Token {token_type: TokenType::Comma, literal: ",".to_string()},
+            Token {token_type: TokenType::Ident, literal: "y".to_string()},
+            Token {token_type: TokenType::Rparen, literal: ")".to_string()},
+            Token {token_type: TokenType::Lbrace, literal: "{".to_string()},
+            Token {token_type: TokenType::Ident, literal: "x".to_string()},
+            Token {token_type: TokenType::Plus, literal: "+".to_string()},
+            Token {token_type: TokenType::Ident, literal: "y".to_string()},
+            Token {token_type: TokenType::Semicolon, literal: ";".to_string()},
+            Token {token_type: TokenType::Rbrace, literal: "}".to_string()},
+            Token {token_type: TokenType::Semicolon, literal: ";".to_string()},
+            Token {token_type: TokenType::Let, literal: "let".to_string()},
+            Token {token_type: TokenType::Ident, literal: "result".to_string()},
+            Token {token_type: TokenType::Assign, literal: "=".to_string()},
+            Token {token_type: TokenType::Ident, literal: "add".to_string()},
+            Token {token_type: TokenType::Lparen, literal: "(".to_string()},
+            Token {token_type: TokenType::Ident, literal: "five".to_string()},
+            Token {token_type: TokenType::Comma, literal: ",".to_string()},
+            Token {token_type: TokenType::Ident, literal: "ten".to_string()},
+            Token {token_type: TokenType::Rparen, literal: ")".to_string()},
+            Token {token_type: TokenType::Semicolon, literal: ";".to_string()},
+            Token {token_type: TokenType::Eof, literal: "".to_string()}
+        ];
+
+        let mut lexer: Lexer = Lexer::new(input.to_string());
+        for token in expected {
+            let lexed_token = lexer.next_token();
+            //println!("expected: {:?}, read: {:?}", token, lexed_token);
+            assert_eq!(lexed_token, token);
+        }
             
-    // }
+    }
 
 
 }
