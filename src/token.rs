@@ -1,4 +1,4 @@
-use std::fmt;
+// use std::fmt;
 
 
 #[derive(Clone, Debug, PartialEq)]
@@ -48,21 +48,21 @@ pub enum TokenType {
 }
 
 
-impl fmt::Display for TokenType {
-    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
-        match self {
-            TokenType::Asterisk => write!(f, "*"),
-            TokenType::Slash => write!(f, "/"),
-            TokenType::Plus => write!(f, "+"),
-            TokenType::Minus => write!(f, "-"),
-            TokenType::Gt => write!(f, ">"),
-            TokenType::Lt => write!(f, "<"),
-            TokenType::Eq => write!(f, "=="),
-            TokenType::NotEq => write!(f, "!="),
-            _ => write!(f, "{:?}", self),
-        }
-    }
-}
+// impl fmt::Display for TokenType {
+//     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+//         match self {
+//             TokenType::Asterisk => write!(f, "*"),
+//             TokenType::Slash => write!(f, "/"),
+//             TokenType::Plus => write!(f, "+"),
+//             TokenType::Minus => write!(f, "-"),
+//             TokenType::Gt => write!(f, ">"),
+//             TokenType::Lt => write!(f, "<"),
+//             TokenType::Eq => write!(f, "=="),
+//             TokenType::NotEq => write!(f, "!="),
+//             _ => write!(f, "{:?}", self),
+//         }
+//     }
+// }
 
 #[derive(Debug, Clone, PartialEq)]
 pub struct Token {
