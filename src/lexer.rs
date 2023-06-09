@@ -34,6 +34,15 @@ impl Lexer {
         self.read_position += 1;
     }
 
+    pub fn peek_char(&self) -> char {
+        let mod_input: Vec<char> = self.input.chars().collect();
+        if self.read_position >= self.input.len() {
+            '\0'
+        } else {
+            mod_input[self.read_position]
+        }
+    }
+
     // continuo a leggere finchè trovo lettere e poi ritorno la stringa dell'ident 
     pub fn read_identifier(&mut self) -> &str {
         let position = self.position;
@@ -70,7 +79,26 @@ impl Lexer {
     pub fn next_token(&mut self) -> Token {
         self.skip_whitespace();
         let token = match self.ch{
-            '=' => Token::new(TokenType::Assign, self.ch.to_string()),
+            // '=' => Token::new(TokenType::Assign, self.ch.to_string()),
+            //'!' => Token::new(TokenType::Bang, self.ch.to_string()),
+            '=' => {
+                if self.peek_char() == '=' {
+                    let ch: String = String::from(self.ch);
+                    self.read_char();
+                    Token::new(TokenType::Eq, ch + &self.ch.to_string())
+                } else {
+                    Token::new(TokenType::Assign, self.ch.to_string()) 
+                }
+            },
+            '!' => {
+                if self.peek_char() == '=' {
+                    let ch: String = String::from(self.ch);
+                    self.read_char();
+                    Token::new(TokenType::NotEq, ch + &self.ch.to_string())
+                } else {
+                    Token::new(TokenType::Bang, self.ch.to_string())
+                }
+            },
             ';' => Token::new(TokenType::Semicolon, self.ch.to_string()),
             '(' => Token::new(TokenType::Lparen, self.ch.to_string()),
             ')' => Token::new(TokenType::Rparen, self.ch.to_string()),
@@ -81,6 +109,10 @@ impl Lexer {
             '}' => Token::new(TokenType::Rbrace, self.ch.to_string()),
             '[' => Token::new(TokenType::Lbracket, self.ch.to_string()),
             ']' => Token::new(TokenType::Rbracket, self.ch.to_string()),
+            '>' => Token::new(TokenType::Gt, self.ch.to_string()),
+            '<' => Token::new(TokenType::Lt, self.ch.to_string()),
+            '*' => Token::new(TokenType::Asterisk, self.ch.to_string()),
+            '/' => Token::new(TokenType::Slash, self.ch.to_string()),
             '\0' => Token::new(TokenType::Eof, "".to_string()),
             _ => {
                  if is_letter(self.ch) {
@@ -119,7 +151,7 @@ mod test {
     use super::Lexer;
 
     #[test]
-    pub fn test_next_token() {
+    fn test_next_token() {
         let input: String = String::from("=+(){},;");
         let expected: [Token; 8] = [ // array of Token
             Token {token_type: TokenType::Assign, literal: "=".to_string()},
@@ -142,7 +174,7 @@ mod test {
 
 
     #[test]
-    pub fn test_next_token_ext() {
+    fn test_next_token_ext() {
         let input = "let five = 5;";
         let expected = [
             Token {token_type: TokenType::Let, literal: "let".to_string()},
@@ -161,7 +193,7 @@ mod test {
     }
 
     #[test]
-    pub fn test_next_token_ext_2() {
+    fn test_next_token_ext_2() {
         let input = "
         let five = 5;
         let ten = 10;
@@ -221,5 +253,99 @@ mod test {
             
     }
 
+
+    #[test]
+    fn extended_tokens() {
+        let input = "
+            !-/*5;
+            5 < 10 > 5;
+        ";
+        let expected = [
+            Token::new(TokenType::Bang, "!".to_string()),
+            Token::new(TokenType::Minus, "-".to_string()),
+            Token::new(TokenType::Slash, "/".to_string()),
+            Token::new(TokenType::Asterisk, "*".to_string()),
+            Token::new(TokenType::Int, "5".to_string()),
+            Token::new(TokenType::Semicolon, ";".to_string()),
+            Token::new(TokenType::Int, "5".to_string()),
+            Token::new(TokenType::Lt, "<".to_string()),
+            Token::new(TokenType::Int, "10".to_string()),
+            Token::new(TokenType::Gt, ">".to_string()),
+            Token::new(TokenType::Int, "5".to_string()),
+            Token::new(TokenType::Semicolon, ";".to_string()),
+            Token::new(TokenType::Eof, "".to_string()),
+        ];
+        let mut lexer = Lexer::new(input.to_string());
+        for token in expected.iter() {
+            let lexed_token = lexer.next_token();
+            assert_eq!(lexed_token, *token);
+        }
+    }
+
+
+    #[test]
+    fn if_else_tokens() {
+        let input = "
+            if (5 < 10) {
+                return true;
+            } else {
+                return false;
+            }
+        ";
+        let expected = [
+            Token::new(TokenType::If, "if".to_string()),
+            Token::new(TokenType::Lparen, "(".to_string()),
+            Token::new(TokenType::Int, "5".to_string()),
+            Token::new(TokenType::Lt, "<".to_string()),
+            Token::new(TokenType::Int, "10".to_string()),
+            Token::new(TokenType::Rparen, ")".to_string()),
+            Token::new(TokenType::Lbrace, "{".to_string()),
+            Token::new(TokenType::Return, "return".to_string()),
+            Token::new(TokenType::True, "true".to_string()),
+            Token::new(TokenType::Semicolon, ";".to_string()),
+            Token::new(TokenType::Rbrace, "}".to_string()),
+            Token::new(TokenType::Else, "else".to_string()),
+            Token::new(TokenType::Lbrace, "{".to_string()),
+            Token::new(TokenType::Return, "return".to_string()),
+            Token::new(TokenType::False, "false".to_string()),
+            Token::new(TokenType::Semicolon, ";".to_string()),
+            Token::new(TokenType::Rbrace, "}".to_string()),
+            Token::new(TokenType::Eof, "".to_string()),
+        ];
+
+        let mut lexer = Lexer::new(input.to_string());
+
+        for token in expected.iter() {
+            let lexed_token = lexer.next_token();
+            assert_eq!(lexed_token, *token);
+        }
+    }
+
+    #[test]
+    fn equals_not_equals() {
+        let input = "
+            10 == 10;
+            10 != 9;
+        ";
+
+        let expected = [
+            Token::new(TokenType::Int, "10".to_string()),
+            Token::new(TokenType::Eq, "==".to_string()),
+            Token::new(TokenType::Int, "10".to_string()),
+            Token::new(TokenType::Semicolon, ";".to_string()),
+            Token::new(TokenType::Int, "10".to_string()),
+            Token::new(TokenType::NotEq, "!=".to_string()),
+            Token::new(TokenType::Int, "9".to_string()),
+            Token::new(TokenType::Semicolon, ";".to_string()),
+            Token::new(TokenType::Eof, "".to_string()),
+        ];
+
+        let mut lexer = Lexer::new(input.to_string());
+
+        for token in expected.iter() {
+            let lexed_token = lexer.next_token();
+            assert_eq!(lexed_token, *token);
+        }
+    }
 
 }
