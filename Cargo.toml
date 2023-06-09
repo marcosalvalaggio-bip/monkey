@@ -7,6 +7,3 @@ edition = "2021"
 
 [dependencies]
 
-[[test]]
-name = "lexer_test"
-path = "src/lexer.rs"

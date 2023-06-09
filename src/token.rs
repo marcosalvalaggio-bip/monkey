@@ -1,5 +1,6 @@
 use std::fmt;
 
+
 #[derive(Clone, Debug, PartialEq)]
 pub enum TokenType {
     Illegal,
@@ -8,8 +9,8 @@ pub enum TokenType {
     // Identifiers + literals
     Ident,  // add, foobar, x, y, ...
     Int,    // 123456
-    Float,  // 123.456
-    String, // "hello"
+    //Float,  // 123.456
+    //String, // "hello"
 
     // Operators
     Assign, // '='
@@ -26,7 +27,7 @@ pub enum TokenType {
     NotEq, // '!='
 
     Comma, // ','
-    Colon, // ':'
+    //Colon, // ':'
     Semicolon, // ';'
 
     Lparen, // '('

@@ -1,5 +1,4 @@
-mod token;
-use token::{Token, TokenType, lookup_identifier};  
+use super::token::{Token, TokenType, lookup_identifier};
 
 #[derive(Debug)]
 pub struct Lexer {
@@ -146,9 +145,8 @@ fn is_digit(ch: char) -> bool {
 #[cfg(test)]
 mod test {
 
-    use super::Token;
-    use super::TokenType;
     use super::Lexer;
+    use super::super::token::{TokenType, Token};
 
     #[test]
     fn test_next_token() {
