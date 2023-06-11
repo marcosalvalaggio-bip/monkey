@@ -8,7 +8,6 @@ pub struct Lexer {
     pub ch: char, // current char under examination
 }
 
-
 impl Lexer {
 
     pub fn new(input: String) -> Lexer {
